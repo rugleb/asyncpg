@@ -397,6 +397,9 @@ def _parse_connect_dsn_and_args(*, dsn, host, port, user,
     if ssl is None:
         ssl = os.getenv('PGSSLMODE')
 
+    if ssl is None:
+        ssl = 'prefer'
+
     # ssl_is_advisory is only allowed to come from the sslmode parameter.
     ssl_is_advisory = None
     if isinstance(ssl, str):
@@ -435,14 +438,8 @@ def _parse_connect_dsn_and_args(*, dsn, host, port, user,
             if sslmode <= SSLMODES['require']:
                 ssl.verify_mode = ssl_module.CERT_NONE
             ssl_is_advisory = sslmode <= SSLMODES['prefer']
-
-    if ssl:
-        for addr in addrs:
-            if isinstance(addr, str):
-                # UNIX socket
-                raise exceptions.InterfaceError(
-                    '`ssl` parameter can only be enabled for TCP addresses, '
-                    'got a UNIX socket path: {!r}'.format(addr))
+    elif ssl is True:
+        ssl = ssl_module.create_default_context()
 
     if server_settings is not None and (
             not isinstance(server_settings, dict) or
@@ -542,9 +539,6 @@ class TLSUpgradeProto(asyncio.Protocol):
 async def _create_ssl_connection(protocol_factory, host, port, *,
                                  loop, ssl_context, ssl_is_advisory=False):
 
-    if ssl_context is True:
-        ssl_context = ssl_module.create_default_context()
-
     tr, pr = await loop.create_connection(
         lambda: TLSUpgradeProto(loop, host, port,
                                 ssl_context, ssl_is_advisory),
@@ -625,7 +619,6 @@ async def _connect_addr(
 
     if isinstance(addr, str):
         # UNIX socket
-        assert not params.ssl
         connector = loop.create_unix_connection(proto_factory, addr)
     elif params.ssl:
         connector = _create_ssl_connection(
