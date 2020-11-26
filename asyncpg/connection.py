@@ -1871,19 +1871,19 @@ async def connect(dsn=None, *,
         returned by `ssl.create_default_context() <create_default_context_>`_
         will be used.  The value can also be one of the following strings:
 
-            - ``'disable'`` - SSL is disabled (equivalent to ``False``)
-            - ``'prefer'`` - try SSL first, fallback to non-SSL connection
-              if SSL connection fails
-            - ``'allow'`` - currently equivalent to ``'prefer'``
-            - ``'require'`` - only try an SSL connection.  Certificate
-              verifiction errors are ignored
-            - ``'verify-ca'`` - only try an SSL connection, and verify
-              that the server certificate is issued by a trusted certificate
-              authority (CA)
-            - ``'verify-full'`` - only try an SSL connection, verify
-              that the server certificate is issued by a trusted CA and
-              that the requested server host name matches that in the
-              certificate.
+        - ``'disable'`` - SSL is disabled (equivalent to ``False``)
+        - ``'prefer'`` - try SSL first, fallback to non-SSL connection
+          if SSL connection fails
+        - ``'allow'`` - currently equivalent to ``'prefer'``
+        - ``'require'`` - only try an SSL connection.  Certificate
+          verifiction errors are ignored
+        - ``'verify-ca'`` - only try an SSL connection, and verify
+          that the server certificate is issued by a trusted certificate
+          authority (CA)
+        - ``'verify-full'`` - only try an SSL connection, verify
+          that the server certificate is issued by a trusted CA and
+          that the requested server host name matches that in the
+          certificate.
 
         The default is ``'prefer'``: try an SSL connection and fallback to
         non-SSL connection if that fails.
