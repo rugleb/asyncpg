@@ -547,6 +547,7 @@ class TestConnectParams(tb.TestCase):
                 {
                     'user': 'user',
                     'database': 'user',
+                    'ssl': None
                 }
             )
         },
@@ -576,7 +577,9 @@ class TestConnectParams(tb.TestCase):
                     ('localhost', 5433)
                 ], {
                     'user': 'spam',
-                    'database': 'db'
+                    'database': 'db',
+                    'ssl': True,
+                    'ssl_is_advisory': True
                 }
             )
         },
@@ -646,7 +649,8 @@ class TestConnectParams(tb.TestCase):
                 connect_timeout=None, server_settings=server_settings)
 
             params = {
-                k: v for k, v in params._asdict().items() if v is not None
+                k: v for k, v in params._asdict().items()
+                if v is not None or (expected is not None and k in expected[1])
             }
 
             if isinstance(params.get('ssl'), ssl.SSLContext):
