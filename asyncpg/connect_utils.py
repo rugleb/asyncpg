@@ -380,6 +380,7 @@ def _parse_connect_dsn_and_args(*, dsn, host, port, user,
                 passfile=passfile)
 
     addrs = []
+    have_tcp_addrs = False
     for h, p in zip(host, port):
         if h.startswith('/'):
             # UNIX socket name
@@ -389,6 +390,7 @@ def _parse_connect_dsn_and_args(*, dsn, host, port, user,
         else:
             # TCP host/port
             addrs.append((h, p))
+            have_tcp_addrs = True
 
     if not addrs:
         raise ValueError(
@@ -397,7 +399,7 @@ def _parse_connect_dsn_and_args(*, dsn, host, port, user,
     if ssl is None:
         ssl = os.getenv('PGSSLMODE')
 
-    if ssl is None:
+    if ssl is None and have_tcp_addrs:
         ssl = 'prefer'
 
     # ssl_is_advisory is only allowed to come from the sslmode parameter.
